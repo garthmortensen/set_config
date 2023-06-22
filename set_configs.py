@@ -37,17 +37,17 @@ class FileHandler:
                 file.write(f"{new_text}\n")
 
 
-    def check_directory_permissions(self, dir_path):
-        if not os.path.exists(dir_path):
-            print(f"dir does not exist: {dir_path}")
+    def check_directory_permissions(self):
+        if not os.path.exists(self.dir_path):
+            print(f"dir does not exist: {self.dir_path}")
             return
 
-        permission_read = os.access(dir_path, os.R_OK)
-        permission_write = os.access(dir_path, os.W_OK)
-        permission_execute = os.access(dir_path, os.X_OK)
+        permission_read = os.access(self.dir_path, os.R_OK)
+        permission_write = os.access(self.dir_path, os.W_OK)
+        permission_execute = os.access(self.dir_path, os.X_OK)
 
         # fancy f-strings
-        print(f"Permissions for: {dir_path}")
+        print(f"Permissions for: {self.dir_path}")
         print(f"Read: {'Yes' if permission_read else 'No'}")
         print(f"Write: {'Yes' if permission_write else 'No'}")
         print(f"Execute: {'Yes' if permission_execute else 'No'}")
@@ -104,43 +104,44 @@ set_git_config("email", "me@aol.com")
 
 
 
-
-# TODO: class SSH_Creator()
-
 import getpass
 
-def get_home_dir():
 
-    whoami = getpass.getuser()
-
-    home_dir = os.path.expanduser("~" + whoami)
-    if os.path.isdir(home_dir):
-        return home_dir
-    else:
-        print(f"Home dir does not exist.")
+class SSH_Creator():
 
 
-def create_ssh_file_ed25519(passphrase=None):
-    """requires anaconda standard distribution. looks very much like crypto functions for blockchain wallets"""
+    def get_home_dir():
 
-    home_dir = get_home_dir()
-    public_name = "id_ed25519.pub"
-    private_name = "id_ed25519"
-    filepath_public = os.path.join(home_dir, public_name)
-    filepath_private = os.path.join(home_dir, private_name)
+        whoami = getpass.getuser()
 
-    key = paramiko.Ed25519Key.generate()
-
-    if passphrase:
-        key.write_private_key_file(filepath_private, password=passphrase)
-    else:
-        key.write_private_key_file(filepath_private)
-
-    with open(filepath_public, "w") as f:
-        f.write(f"{key.get_name()} {key.get_base64()}")
-
-    print(f"ssh files created!")
+        home_dir = os.path.expanduser("~" + whoami)
+        if os.path.isdir(home_dir):
+            return home_dir
+        else:
+            print(f"Home dir does not exist.")
 
 
-create_ssh_file_ed25519()
+    def create_ssh_file_ed25519(passphrase=None):
+        """requires anaconda standard distribution. looks very much like crypto functions for blockchain wallets"""
+
+        home_dir = get_home_dir()
+        public_name = "id_ed25519.pub"
+        private_name = "id_ed25519"
+        filepath_public = os.path.join(home_dir, public_name)
+        filepath_private = os.path.join(home_dir, private_name)
+
+        key = paramiko.Ed25519Key.generate()
+
+        if passphrase:
+            key.write_private_key_file(filepath_private, password=passphrase)
+        else:
+            key.write_private_key_file(filepath_private)
+
+        with open(filepath_public, "w") as f:
+            f.write(f"{key.get_name()} {key.get_base64()}")
+
+        print(f"ssh files created!")
+
+
+SSH_Creator.create_ssh_file_ed25519()
 
