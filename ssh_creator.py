@@ -1,6 +1,6 @@
 import os
 import getpass
-import paramiko
+import paramiko  # for Windows Anaconda
 import subprocess
 
 
@@ -11,7 +11,7 @@ class SSH_Creator:
     """
 
     # static bc doesnt require instance-specific data. stateless
-    # so, no need to instantiate an object
+    # no need to instantiate an object
     @staticmethod
     def get_home_dir():
         """Gets users home dir (`~`)
@@ -24,9 +24,10 @@ class SSH_Creator:
 
         home_dir = os.path.expanduser("~" + whoami)
         if os.path.isdir(home_dir):
+            print(f"home_dir: {home_dir}")
             return home_dir
         else:
-            print(f"Home dir does not exist.")
+            print(f"home_dir does not exist.")
             return None
 
 
@@ -57,14 +58,36 @@ class SSH_Creator:
                 if each_file.endswith((".pub", ".pem")):
                     print(f"public ssh key file already exists: {os.path.join(ssh_dir, each_file)}")
                     return True
+        else:
+            print(f"ssh_dir does not exist: {os.path.join(home_dir, '.ssh')}")
 
         return False
 
 
     @staticmethod
+    def paramiko_available():
+        """Checks if paramiko library is available.
+
+        Inspiration: https://stackoverflow.com/questions/44210656/how-to-check-if-a-module-is-installed-in-python-and-if-not-install-it-within-t
+
+        :return: True if paramiko is available, otherwise False.
+        :rtype: bool
+        """
+        try:
+            import paramiko
+            return True
+        except ImportError:
+            return False
+
+
+    @staticmethod
     def create_ssh_file_ed25519_paramiko(passphrase=None):
         """Requires paramiko, which is included in recent Anaconda standard distros.
-        Appears very similar blockchain wallets functions."""
+
+        The library has a lot of functionality, such as remote execution and file transfers. More importantly, the method is OS independent.
+
+        Reminisent of blockchain wallets functions.
+        """
 
         home_dir = SSH_Creator.get_home_dir()
         if not home_dir:
@@ -117,8 +140,25 @@ class SSH_Creator:
         print(f"ssh files created via bash subprocess command!")
 
 
-SSH_Creator.get_home_dir()
-# passphrase = 'iaminlovewithbeefjerky'
-# SSH_Creator.create_ssh_file_ed25519_paramiko()
-SSH_Creator.create_ssh_file_ed25519_bash()
+    @staticmethod
+    def create_ssh_file_ed25519(passphrase=None):
+        """Creates an ssh key using either paramiko library or simple bash.
 
+        If paramiko is available, it uses it to generate the ssh key.
+        If paramiko is not available, it falls back to using the bash command `ssh-keygen` to generate the ssh key.
+
+        :param passphrase: Optional passphrase to increase the private key security. This necessitates typing the password for `git push`.
+        :type passphrase: str or None
+        :return: None
+        """
+
+        if SSH_Creator.paramiko_available():
+            SSH_Creator.create_ssh_file_ed25519_paramiko(passphrase)
+        else:
+            SSH_Creator.create_ssh_file_ed25519_bash(passphrase)
+
+
+# no instantiate bc staticmethods
+# SSH_Creator.get_home_dir()
+# passphrase = 'iaminlovewithbeefjerky'
+SSH_Creator.create_ssh_file_ed25519(passphrase=None)
