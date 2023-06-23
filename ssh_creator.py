@@ -1,6 +1,5 @@
 import os
 import getpass
-import paramiko  # for Windows Anaconda
 import subprocess
 
 
@@ -74,7 +73,7 @@ class SSH_Creator:
             bool: True if paramiko is available, otherwise False.
         """
         try:
-            import paramiko
+            import paramiko  # for Windows Anaconda
             return True
         except ImportError:
             return False
