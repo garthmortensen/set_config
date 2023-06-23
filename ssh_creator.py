@@ -13,11 +13,11 @@ class SSH_Creator:
     # static bc doesnt require instance-specific data. stateless
     # no need to instantiate an object
     @staticmethod
-    def get_home_dir():
+    def get_home_dir() -> str or None:
         """Gets users home dir (`~`)
 
-        :return: path to users home dir
-        :rtype: str or None
+        Returns:
+            str or None: Path to users home dir.
         """
 
         whoami = getpass.getuser()
@@ -32,14 +32,14 @@ class SSH_Creator:
 
 
     @staticmethod
-    def check_ssh_key_exists():
+    def check_ssh_key_exists() -> bool:
         """Check if an ssh key *.pub or *.pem file exists. Pub is genearted via ssh-keygen, pem is generated via PuTTY.
 
         Returns True if .ssh directory exists and *.pub file found within.
         Returns False otherwise.
 
-        :return: True if ~/.ssh/*.pub exists, False otherwise.
-        :rtype: bool
+        Returns:
+            bool: True if ~/.ssh/*.pub exists, False otherwise.
         """
 
         home_dir = SSH_Creator.get_home_dir()
@@ -65,13 +65,13 @@ class SSH_Creator:
 
 
     @staticmethod
-    def paramiko_available():
+    def paramiko_available() -> bool:
         """Checks if paramiko library is available.
 
         Inspiration: https://stackoverflow.com/questions/44210656/how-to-check-if-a-module-is-installed-in-python-and-if-not-install-it-within-t
 
-        :return: True if paramiko is available, otherwise False.
-        :rtype: bool
+        Returns:
+            bool: True if paramiko is available, otherwise False.
         """
         try:
             import paramiko
@@ -81,12 +81,16 @@ class SSH_Creator:
 
 
     @staticmethod
-    def create_ssh_file_ed25519_paramiko(passphrase=None):
+    def create_ssh_file_ed25519_paramiko(passphrase: str = None) -> None:
         """Requires paramiko, which is included in recent Anaconda standard distros.
 
         The library has a lot of functionality, such as remote execution and file transfers. More importantly, the method is OS independent.
 
         Reminisent of blockchain wallets functions.
+
+        Args:
+            passphrase (optional): Optional passphrase to increase key security.
+                This necessitates you type the password to `git push`.
         """
 
         home_dir = SSH_Creator.get_home_dir()
@@ -115,13 +119,13 @@ class SSH_Creator:
 
 
     @staticmethod
-    def create_ssh_file_ed25519_bash(passphrase=None):
+    def create_ssh_file_ed25519_bash(passphrase: str = None) -> None:
         """`Paramiko.generate()` was added later than my WSL python version.
         This alternative approach which uses only bash.
         
-        :param passphrase: Optional passphrase to increase private key security. This necessitates you type the password to `git push`.
-        :type passphrase: str or None
-        :return: None
+        Args:
+            passphrase (str, optional): Optional passphrase to increase private key security.
+                This necessitates you type the password to `git push`.
         """
 
         home_dir = SSH_Creator.get_home_dir()
@@ -147,9 +151,9 @@ class SSH_Creator:
         If paramiko is available, it uses it to generate the ssh key.
         If paramiko is not available, it falls back to using the bash command `ssh-keygen` to generate the ssh key.
 
-        :param passphrase: Optional passphrase to increase the private key security. This necessitates typing the password for `git push`.
-        :type passphrase: str or None
-        :return: None
+        Args:
+            passphrase (str, optional): Optional passphrase to increase private key security.
+                This necessitates you type the password to `git push`.
         """
 
         if SSH_Creator.paramiko_available():
