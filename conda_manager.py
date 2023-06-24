@@ -4,7 +4,15 @@ import getpass
 
 
 class CondaManager:
+    """
+    Class to manage Conda environments.
 
+    Provides methods to find where the directory which stores conda environments is located on filesystem, determien if an input
+    conda env exists by looking therein, and finally creates it under that name if it doesn't exist.
+
+    This is meant to run in an automatated fashion without command lines, which would merely be replicating existing
+    conda env functionality. No, instead, just provide a variable name, edit script as required, and call it.
+    """
 
     def get_conda_env_path(self) -> str:
         """
@@ -15,7 +23,7 @@ class CondaManager:
         """
         whoami = getpass.getuser()
 
-        # TODO: works, but are there any case-sensitivity issues?
+        # REVIEW: works, but are there any case-sensitivity issues?
         # windows paths
         windows_paths = [
             os.path.join("C:", "Users", whoami, "Anaconda3", "envs"),
@@ -28,17 +36,19 @@ class CondaManager:
             os.path.expanduser(f"~{whoami}/.conda/envs"),
         ]
 
-        # TODO: add try except to better handle "unknown" unhappy path
-        for conda_path in windows_paths:
-            if os.path.exists(conda_path) and os.path.isdir(conda_path):
-                print(f"found conda_path: {conda_path}")
-                return conda_path
+        all_paths = windows_paths + linux_paths
 
-        for conda_path in linux_paths:
-            if os.path.exists(conda_path) and os.path.isdir(conda_path):
-                print(f"found conda_path: {conda_path}")
-                return conda_path
+        for each_path in all_paths:
+            try:
+                if os.path.exists(each_path) and os.path.isdir(each_path):
+                    print(f"found each_path: {each_path}")
+                    return each_path
+            # if no such path is found, throw error.
+            except OSError as e:
+                print(f"get_conda_env_path() found no windows_path or conda_path: {e}")
+                pass
 
+        # REVIEW: Not sure what conditions would lead to this return statement
         return "unknown"
 
 
@@ -53,8 +63,8 @@ class CondaManager:
             bool: True if the environment exists, False otherwise.
         """
 
-        # method defined within a class, so it requires the self. it points to itself.
-        # self arg lets the method access attribubes and behavior
+        # NOTE: method defined within a class, so it requires the self. it points to itself.
+        # NOTE: self arg lets the method access attribubes and behavior
         conda_path = self.get_conda_env_path()  # "method invocation", i.e. calling a method
 
         # if conda_path found, proceed
@@ -90,7 +100,7 @@ class CondaManager:
             print(f"Conda environment already exists: {env_name}")
 
 
-env_name = "cats"
+env_name = "rstudio"
 conda_manager = CondaManager()
 conda_manager.create_conda_env(env_name)
 
