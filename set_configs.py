@@ -1,5 +1,4 @@
 import os
-import subprocess
 
 
 class FileHandler:
@@ -8,7 +7,7 @@ class FileHandler:
         self.file_name = file_name
         self.file_path = os.path.join(self.dir_path, self.file_name)
         self.new_text_file = new_text_file
-        
+ 
     def mkdir(self):
         if not os.path.exists(self.dir_path):
             os.makedirs(self.dir_path)
@@ -35,7 +34,6 @@ class FileHandler:
             if new_text not in content:
                 file.write(f"{new_text}\n")
 
-
     def check_directory_permissions(self):
         if not os.path.exists(self.dir_path):
             print(f"dir does not exist: {self.dir_path}")
@@ -54,6 +52,3 @@ class FileHandler:
 
 file_handler = FileHandler("my_dir", "my_file.txt", "new_text_file.txt")
 file_handler.mkdir_file_and_append()
-
-
-
