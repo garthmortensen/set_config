@@ -1,6 +1,7 @@
-from .conda_manager import CondaManager
-from .git_handler import GitHandler
-from .ssh_creator import SSH_Creator
+import argparse
+from conda_manager import CondaManager
+from git_handler import GitHandler
+from ssh_creator import SSH_Creator
 
 
 class SetupCoordinator:
@@ -28,7 +29,13 @@ class SetupCoordinator:
         self.conda_manager.create_conda_env(env_name)
 
 
-setup_coordinator = SetupCoordinator()
-passphrase = "ilovemydog"
-env_name = "rstudio"
-setup_coordinator.execute_all(passphrase, env_name)
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Configure git, ssh, and conda env.')
+    parser.add_argument('--passphrase', type=str, nargs='?', help='passphrase to generate SSH key')
+    parser.add_argument('--env_name', type=str, nargs='?', help='conda env name')
+    args = parser.parse_args()
+
+    setup_coordinator = SetupCoordinator()
+    passphrase = args.passphrase
+    env_name = args.env_name
+    setup_coordinator.execute_all(passphrase, env_name)

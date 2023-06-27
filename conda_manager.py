@@ -37,6 +37,7 @@ class CondaManager:
         ]
 
         all_paths = windows_paths + linux_paths
+        print(f"all_paths: {all_paths}")
 
         for each_path in all_paths:
             try:
@@ -49,7 +50,7 @@ class CondaManager:
                 pass
 
         # REVIEW: Not sure what conditions would lead to this return statement
-        return "unknown"
+        return None
 
 
     def conda_env_exists(self, env_name: str) -> bool:
