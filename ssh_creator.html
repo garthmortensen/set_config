@@ -1,0 +1,186 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>SSH_Creator module &#8212; setup_coordinator 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="ssh-creator-module">
+<h1>SSH_Creator module<a class="headerlink" href="#ssh-creator-module" title="Permalink to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="ssh_creator.SSH_Creator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ssh_creator.</span></span><span class="sig-name descname"><span class="pre">SSH_Creator</span></span><a class="reference internal" href="_modules/ssh_creator.html#SSH_Creator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ssh_creator.SSH_Creator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for creating and managing ssh keys.</p>
+<p>It provides methods to check for the existence of ssh keys and conditionally generate them.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ssh_creator.SSH_Creator.check_ssh_key_exists">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_ssh_key_exists</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/ssh_creator.html#SSH_Creator.check_ssh_key_exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ssh_creator.SSH_Creator.check_ssh_key_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if an ssh key <a href="#id1"><span class="problematic" id="id2">*</span></a>.pub or <a href="#id3"><span class="problematic" id="id4">*</span></a>.pem file exists. Pub is genearted via ssh-keygen, pem is generated via PuTTY.</p>
+<p>Returns True if .ssh directory exists and <a href="#id5"><span class="problematic" id="id6">*</span></a>.pub file found within.
+Returns False otherwise.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>bool: True if ~/.ssh/<a href="#id7"><span class="problematic" id="id8">*</span></a>.pub exists, False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ssh_creator.SSH_Creator.create_ssh_file_ed25519">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_ssh_file_ed25519</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">passphrase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ssh_creator.html#SSH_Creator.create_ssh_file_ed25519"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ssh_creator.SSH_Creator.create_ssh_file_ed25519" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates an ssh key using either paramiko library or simple bash.</p>
+<p>If paramiko is available, it uses it to generate the ssh key.
+If paramiko is not available, it falls back to using the bash command <cite>ssh-keygen</cite> to generate the ssh key.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>passphrase (str, optional): Optional passphrase to increase private key security.</dt><dd><p>This necessitates you type the password to <cite>git push</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ssh_creator.SSH_Creator.create_ssh_file_ed25519_bash">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_ssh_file_ed25519_bash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">passphrase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/ssh_creator.html#SSH_Creator.create_ssh_file_ed25519_bash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ssh_creator.SSH_Creator.create_ssh_file_ed25519_bash" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>Paramiko.generate()</cite> was added later than my WSL python version.
+This alternative approach which uses only bash.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>passphrase (str, optional): Optional passphrase to increase private key security.</dt><dd><p>This necessitates you type the password to <cite>git push</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ssh_creator.SSH_Creator.create_ssh_file_ed25519_paramiko">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_ssh_file_ed25519_paramiko</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">passphrase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/ssh_creator.html#SSH_Creator.create_ssh_file_ed25519_paramiko"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ssh_creator.SSH_Creator.create_ssh_file_ed25519_paramiko" title="Permalink to this definition">¶</a></dt>
+<dd><p>Requires paramiko, which is included in recent Anaconda standard distros.</p>
+<p>The library has a lot of functionality, such as remote execution and file transfers. More importantly, the method is OS independent.</p>
+<p>Reminisent of blockchain wallets functions.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>passphrase (optional): Optional passphrase to increase key security.</dt><dd><p>This necessitates you type the password to <cite>git push</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ssh_creator.SSH_Creator.get_home_dir">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_home_dir</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/ssh_creator.html#SSH_Creator.get_home_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ssh_creator.SSH_Creator.get_home_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets users home dir (<cite>~</cite>)</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>str or None: Path to users home dir.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ssh_creator.SSH_Creator.paramiko_available">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">paramiko_available</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/ssh_creator.html#SSH_Creator.paramiko_available"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ssh_creator.SSH_Creator.paramiko_available" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if paramiko library is available.</p>
+<p>Inspiration: <a class="reference external" href="https://stackoverflow.com/questions/44210656/how-to-check-if-a-module-is-installed-in-python-and-if-not-install-it-within-t">https://stackoverflow.com/questions/44210656/how-to-check-if-a-module-is-installed-in-python-and-if-not-install-it-within-t</a></p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>bool: True if paramiko is available, otherwise False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">setup_coordinator</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, al gore.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/ssh_creator.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

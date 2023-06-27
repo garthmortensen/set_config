@@ -1,0 +1,14 @@
+# sphinx ignore build artifacts
+_build/
+
+# sphinx ignore cache
+.doctrees/
+
+# sphinx HTML output
+html/
+
+# sphinx other temp files
+*.tmp
+
+# vscode
+__pycache__/

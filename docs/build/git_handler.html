@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>GitHandler module &#8212; setup_coordinator 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="githandler-module">
+<h1>GitHandler module<a class="headerlink" href="#githandler-module" title="Permalink to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="git_handler.GitHandler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">git_handler.</span></span><span class="sig-name descname"><span class="pre">GitHandler</span></span><a class="reference internal" href="_modules/git_handler.html#GitHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#git_handler.GitHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Utility class for handling Git configuration.</p>
+<p>It provides methods to get and set Git <cite>user.name</cite> and <cite>user.email</cite>.</p>
+<p>If values are not set, then it prompts user for input and sets accordingly.</p>
+<p>To use it, simply call <cite>GitHandler.handle_git_user_settings()</cite>.</p>
+<p>Why are all of these staticmethods? Because you don’t need to instantiate the class, and
+there’s no instance variables or values. <cite>list.sort()</cite> is a staticmethod.</p>
+<p>Use staticmethod when methods need to access/modify instance data.</p>
+<p>If I didn’t use &#64;staticmethod, I would have to __init__, e.g.
+def __init__(self):</p>
+<blockquote>
+<div><p>self.user_name = None
+self.user_email = None</p>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="git_handler.GitHandler.get_git_config">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_git_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/git_handler.html#GitHandler.get_git_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#git_handler.GitHandler.get_git_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>The getter. Checks if git global configuration for <cite>user.name</cite> and <cite>user.email</cite> is set. That is, has the user <a href="#id1"><span class="problematic" id="id2">`</span></a>git config –global user.name “Hancock, John” yet?</p>
+<p>Inspiration: <a class="reference external" href="https://stackoverflow.com/questions/71397719/how-to-get-a-git-user-with-python">https://stackoverflow.com/questions/71397719/how-to-get-a-git-user-with-python</a></p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>variable: The setting to retrieve (“name” or “email”).</p>
+</dd>
+<dt>Returns:</dt><dd><p>current value of the git config variable. If it hasn’t been set, then None. Pretty neat that you can do that, actually.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="git_handler.GitHandler.handle_git_user_settings">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handle_git_user_settings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/git_handler.html#GitHandler.handle_git_user_settings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#git_handler.GitHandler.handle_git_user_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if git global configuration for <cite>user.name</cite> and <cite>user.email</cite> is set. That is, has the user <a href="#id3"><span class="problematic" id="id4">`</span></a>git config –global user.name “Hancock, John” yet?</p>
+<p>It checks if both user.name and user.email are set.
+If both values are not set, it prompts user for input.</p>
+<p>Inspiration: <a class="reference external" href="https://stackoverflow.com/questions/71397719/how-to-get-a-git-user-with-python">https://stackoverflow.com/questions/71397719/how-to-get-a-git-user-with-python</a></p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>True if both <cite>user.name</cite> and <cite>user.email</cite> are set, False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="git_handler.GitHandler.set_git_config">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_git_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/git_handler.html#GitHandler.set_git_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#git_handler.GitHandler.set_git_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>The setter. Sets git config variable to the specified value.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>variable: The config variable to set (“name” or “email”).
+value: The value (e.g. “<a class="reference external" href="mailto:alf&#37;&#52;&#48;aol&#46;com">alf<span>&#64;</span>aol<span>&#46;</span>com</a>”).</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">setup_coordinator</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, al gore.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/git_handler.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

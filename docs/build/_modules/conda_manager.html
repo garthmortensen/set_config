@@ -1,0 +1,204 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>conda_manager &#8212; setup_coordinator 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for conda_manager</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">getpass</span>
+
+
+<div class="viewcode-block" id="CondaManager"><a class="viewcode-back" href="../conda_manager.html#conda_manager.CondaManager">[docs]</a><span class="k">class</span> <span class="nc">CondaManager</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to manage Conda environments.</span>
+
+<span class="sd">    Provides methods to find where the directory which stores conda environments is located on filesystem, determien if an input</span>
+<span class="sd">    conda env exists by looking therein, and finally creates it under that name if it doesn&#39;t exist.</span>
+
+<span class="sd">    This is meant to run in an automatated fashion without command lines, which would merely be replicating existing</span>
+<span class="sd">    conda env functionality. No, instead, just provide a variable name, edit script as required, and call it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CondaManager.get_conda_env_path"><a class="viewcode-back" href="../conda_manager.html#conda_manager.CondaManager.get_conda_env_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_conda_env_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get path to the directory which contains already created conda envs.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: if found, returns the path to the conda envs, or &quot;unknown&quot; otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">whoami</span> <span class="o">=</span> <span class="n">getpass</span><span class="o">.</span><span class="n">getuser</span><span class="p">()</span>
+
+        <span class="c1"># REVIEW: works, but are there any case-sensitivity issues?</span>
+        <span class="c1"># windows paths</span>
+        <span class="n">windows_paths</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;C:&quot;</span><span class="p">,</span> <span class="s2">&quot;Users&quot;</span><span class="p">,</span> <span class="n">whoami</span><span class="p">,</span> <span class="s2">&quot;Anaconda3&quot;</span><span class="p">,</span> <span class="s2">&quot;envs&quot;</span><span class="p">),</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;C:&quot;</span><span class="p">,</span> <span class="s2">&quot;Users&quot;</span><span class="p">,</span> <span class="n">whoami</span><span class="p">,</span> <span class="s2">&quot;AppData&quot;</span><span class="p">,</span> <span class="s2">&quot;Local&quot;</span><span class="p">,</span> <span class="s2">&quot;Continuum&quot;</span><span class="p">,</span> <span class="s2">&quot;Anaconda3&quot;</span><span class="p">,</span> <span class="s2">&quot;envs&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="c1"># linux paths</span>
+        <span class="n">linux_paths</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;~</span><span class="si">{</span><span class="n">whoami</span><span class="si">}</span><span class="s2">/anaconda3/envs&quot;</span><span class="p">),</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;~</span><span class="si">{</span><span class="n">whoami</span><span class="si">}</span><span class="s2">/.conda/envs&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="n">all_paths</span> <span class="o">=</span> <span class="n">windows_paths</span> <span class="o">+</span> <span class="n">linux_paths</span>
+
+        <span class="k">for</span> <span class="n">each_path</span> <span class="ow">in</span> <span class="n">all_paths</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">each_path</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">each_path</span><span class="p">):</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;found each_path: </span><span class="si">{</span><span class="n">each_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">each_path</span>
+            <span class="c1"># if no such path is found, throw error.</span>
+            <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;get_conda_env_path() found no windows_path or conda_path: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">pass</span>
+
+        <span class="c1"># REVIEW: Not sure what conditions would lead to this return statement</span>
+        <span class="k">return</span> <span class="s2">&quot;unknown&quot;</span></div>
+
+
+<div class="viewcode-block" id="CondaManager.conda_env_exists"><a class="viewcode-back" href="../conda_manager.html#conda_manager.CondaManager.conda_env_exists">[docs]</a>    <span class="k">def</span> <span class="nf">conda_env_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines if provided environment name is found in environment path, given `CondaManager.get_conda_env_path()`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            env_name (str): environment name.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the environment exists, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># NOTE: method defined within a class, so it requires the self. it points to itself.</span>
+        <span class="c1"># NOTE: self arg lets the method access attribubes and behavior</span>
+        <span class="n">conda_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_conda_env_path</span><span class="p">()</span>  <span class="c1"># &quot;method invocation&quot;, i.e. calling a method</span>
+
+        <span class="c1"># if conda_path found, proceed</span>
+        <span class="k">if</span> <span class="n">conda_path</span> <span class="o">!=</span> <span class="s2">&quot;unknown&quot;</span><span class="p">:</span>
+            <span class="n">env_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">conda_path</span><span class="p">,</span> <span class="n">env_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">env_dir</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">env_dir</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;env_dir found: </span><span class="si">{</span><span class="n">env_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="CondaManager.create_conda_env"><a class="viewcode-back" href="../conda_manager.html#conda_manager.CondaManager.create_conda_env">[docs]</a>    <span class="k">def</span> <span class="nf">create_conda_env</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Uses input name to create a new conda environment.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            env_name (str): environment name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># if the provided environment name is not found as a directory</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">conda_env_exists</span><span class="p">(</span><span class="n">env_name</span><span class="p">):</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># command = [&#39;conda&#39;, &#39;create&#39;, &#39;-y&#39;, &#39;--name&#39;, env_name, &#39;python=3.7&#39;]</span>
+                <span class="c1"># command = [&#39;conda&#39;, &#39;create&#39;, &#39;-y&#39;, &#39;--name&#39;, env_name, &#39;--file&#39;, &#39;environment.yml&#39;]</span>
+                <span class="n">command</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;conda&#39;</span><span class="p">,</span> <span class="s1">&#39;create&#39;</span><span class="p">,</span> <span class="s1">&#39;-y&#39;</span><span class="p">,</span> <span class="s1">&#39;--name&#39;</span><span class="p">,</span> <span class="n">env_name</span><span class="p">]</span>
+                <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Conda environment created: </span><span class="si">{</span><span class="n">env_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error while running create_conda_env(): </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Conda environment already exists: </span><span class="si">{</span><span class="n">env_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div></div>
+
+
+<span class="n">env_name</span> <span class="o">=</span> <span class="s2">&quot;rstudio&quot;</span>
+<span class="n">conda_manager</span> <span class="o">=</span> <span class="n">CondaManager</span><span class="p">()</span>
+<span class="n">conda_manager</span><span class="o">.</span><span class="n">create_conda_env</span><span class="p">(</span><span class="n">env_name</span><span class="p">)</span>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">setup_coordinator</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, al gore.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

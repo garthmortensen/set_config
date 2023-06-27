@@ -1,0 +1,203 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>git_handler &#8212; setup_coordinator 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for git_handler</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">subprocess</span>
+
+
+<div class="viewcode-block" id="GitHandler"><a class="viewcode-back" href="../git_handler.html#git_handler.GitHandler">[docs]</a><span class="k">class</span> <span class="nc">GitHandler</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Utility class for handling Git configuration.</span>
+
+<span class="sd">    It provides methods to get and set Git `user.name` and `user.email`.</span>
+
+<span class="sd">    If values are not set, then it prompts user for input and sets accordingly.</span>
+
+<span class="sd">    To use it, simply call `GitHandler.handle_git_user_settings()`.</span>
+
+<span class="sd">    Why are all of these staticmethods? Because you don&#39;t need to instantiate the class, and</span>
+<span class="sd">    there&#39;s no instance variables or values. `list.sort()` is a staticmethod.</span>
+
+<span class="sd">    Use staticmethod when methods need to access/modify instance data.</span>
+<span class="sd">    </span>
+<span class="sd">    If I didn&#39;t use @staticmethod, I would have to __init__, e.g.</span>
+<span class="sd">    def __init__(self):</span>
+<span class="sd">        self.user_name = None</span>
+<span class="sd">        self.user_email = None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="GitHandler.get_git_config"><a class="viewcode-back" href="../git_handler.html#git_handler.GitHandler.get_git_config">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_git_config</span><span class="p">(</span><span class="n">variable</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The getter. Checks if git global configuration for `user.name` and `user.email` is set. That is, has the user `git config --global user.name &quot;Hancock, John&quot; yet?</span>
+
+<span class="sd">        Inspiration: https://stackoverflow.com/questions/71397719/how-to-get-a-git-user-with-python</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            variable: The setting to retrieve (&quot;name&quot; or &quot;email&quot;).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            current value of the git config variable. If it hasn&#39;t been set, then None. Pretty neat that you can do that, actually.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># git config --global user.email</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">([</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;config&#39;</span><span class="p">,</span> <span class="s1">&#39;--global&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;user.</span><span class="si">{</span><span class="n">variable</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="c1"># print(f&quot;Current value of `git user.{variable}`: {output}&quot;)</span>
+            <span class="k">return</span> <span class="n">output</span>
+
+        <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># print(f&quot;Error while running `get_git_config()` for user.{variable}: {e}&quot;)</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="GitHandler.set_git_config"><a class="viewcode-back" href="../git_handler.html#git_handler.GitHandler.set_git_config">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">set_git_config</span><span class="p">(</span><span class="n">variable</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The setter. Sets git config variable to the specified value.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            variable: The config variable to set (&quot;name&quot; or &quot;email&quot;).</span>
+<span class="sd">            value: The value (e.g. &quot;alf@aol.com&quot;).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;config&quot;</span><span class="p">,</span> <span class="s2">&quot;--global&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;user.</span><span class="si">{</span><span class="n">variable</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">]</span>
+            <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Git user.</span><span class="si">{</span><span class="n">variable</span><span class="si">}</span><span class="s2"> set to: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error while setting git config --global user.</span><span class="si">{</span><span class="n">variable</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GitHandler.handle_git_user_settings"><a class="viewcode-back" href="../git_handler.html#git_handler.GitHandler.handle_git_user_settings">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">handle_git_user_settings</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if git global configuration for `user.name` and `user.email` is set. That is, has the user `git config --global user.name &quot;Hancock, John&quot; yet?</span>
+
+<span class="sd">        It checks if both user.name and user.email are set.</span>
+<span class="sd">        If both values are not set, it prompts user for input.</span>
+
+<span class="sd">        Inspiration: https://stackoverflow.com/questions/71397719/how-to-get-a-git-user-with-python</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            True if both `user.name` and `user.email` are set, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">user_name</span> <span class="o">=</span> <span class="n">GitHandler</span><span class="o">.</span><span class="n">get_git_config</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">user_name</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;git config --global user.name has not been set&quot;</span><span class="p">)</span>
+            <span class="n">user_name_input</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Enter user.name (e.g. Monster, Alf): &quot;</span><span class="p">)</span>
+            <span class="n">GitHandler</span><span class="o">.</span><span class="n">set_git_config</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">user_name_input</span><span class="p">)</span>
+
+        <span class="n">user_email</span> <span class="o">=</span> <span class="n">GitHandler</span><span class="o">.</span><span class="n">get_git_config</span><span class="p">(</span><span class="s2">&quot;email&quot;</span><span class="p">)</span>
+        <span class="c1"># say not to regex hierglyphs for validating email</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">user_email</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;git config --global user.email has not been set&quot;</span><span class="p">)</span>
+            <span class="n">user_email_input</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Input user.email (e.g. alf.monster@aol.com): &quot;</span><span class="p">)</span>
+            <span class="n">GitHandler</span><span class="o">.</span><span class="n">set_git_config</span><span class="p">(</span><span class="s2">&quot;email&quot;</span><span class="p">,</span> <span class="n">user_email_input</span><span class="p">)</span>
+
+        <span class="c1"># if name or email above were blank, theyre now populated and variables need re-assignment</span>
+        <span class="n">user_name</span> <span class="o">=</span> <span class="n">GitHandler</span><span class="o">.</span><span class="n">get_git_config</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+        <span class="n">user_email</span> <span class="o">=</span> <span class="n">GitHandler</span><span class="o">.</span><span class="n">get_git_config</span><span class="p">(</span><span class="s2">&quot;email&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">user_name</span> <span class="ow">and</span> <span class="n">user_email</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Both git user.name and user.email are set.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Both git user.name and user.email are NOT set!&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span></div></div>
+
+
+<span class="n">GitHandler</span><span class="o">.</span><span class="n">handle_git_user_settings</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">setup_coordinator</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, al gore.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
