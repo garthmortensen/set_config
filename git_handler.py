@@ -13,6 +13,13 @@ class GitHandler:
 
     Why are all of these staticmethods? Because you don't need to instantiate the class, and
     there's no instance variables or values. `list.sort()` is a staticmethod.
+
+    Use staticmethod when methods need to access/modify instance data.
+    
+    If I didn't use @staticmethod, I would have to __init__, e.g.
+    def __init__(self):
+        self.user_name = None
+        self.user_email = None
     """
 
     @staticmethod
