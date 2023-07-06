@@ -1,0 +1,39 @@
+# github
+# curl --header "Authorization: token YOUR_ACCESS_TOKEN" \
+#      --data '{"title":"laptop_ssh", "key":"$(cat ~/.ssh/id_rsa.pub)"}' \
+#      "https://api.github.com/user/keys"
+
+# gitlab
+# curl --header "Private-Token: YOUR_ACCESS_TOKEN" \
+#      --data "title=desktop_ssh&key=$(cat ~/.ssh/id_rsa.pub)" \
+#      "https://gitlab.example.com/api/v4/user/keys"
+
+
+import requests
+
+
+# TODO: add test
+def upload_ssh_pub_key(access_token, ssh_filepath, ssh_filename, title="laptop_ssh"):
+    """Uploads ssh key 
+    """
+    url = "https://api.github.com/user/keys"
+    headers = {"Authorization": f"token {access_token}"}
+    key_content = open(ssh_filepath + ssh_filename, "r").read()
+
+    data = {
+        "title": title,
+        "key": key_content
+    }
+
+    response = requests.post(url, headers=headers, json=data)
+    if response.status_code == 201:
+        print("upload successful.")
+    else:
+        print(f"upload failed with error: {response.status_code}")
+        print(response.json())
+
+
+access_token = "YOUR_GITHUB_ACCESS_TOKEN"
+ssh_filepath = "~/.ssh/"  # TODO: use Path function to point to home dir and relocate inside function
+ssh_filename = "id_rsa.pub"
+upload_ssh_key(access_token, ssh_filepath + ssh_filename)
